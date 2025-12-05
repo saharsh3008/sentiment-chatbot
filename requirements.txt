@@ -1,0 +1,16 @@
+# Sentiment Analysis Chatbot - Requirements
+# 
+# This project uses only Python standard library
+# No external dependencies required!
+#
+# Python Version: 3.8+
+#
+# For development/testing (optional):
+# pytest>=7.0.0
+# black>=22.0.0
+# flake8>=4.0.0
+#
+# Note: The core application runs without any pip installs
+# API Requirements (Optional - for REST API feature)
+flask==3.0.0
+flask-cors==4.0.0

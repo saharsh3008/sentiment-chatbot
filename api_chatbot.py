@@ -37,22 +37,27 @@ if FLASK_AVAILABLE:
     
     @app.route('/')
     def home():
-        """API documentation"""
-        return jsonify({
-            'name': 'Sentiment Analysis Chatbot API',
-            'version': '1.0',
-            'endpoints': {
-                'POST /chat': 'Send a message and get response with sentiment',
-                'GET /analysis': 'Get full conversation analysis',
-                'POST /reset': 'Reset conversation history',
-                'GET /health': 'Health check'
-            },
-            'example_request': {
-                'url': '/chat',
-                'method': 'POST',
-                'body': {'message': 'Your service is amazing!'}
-            }
-        })
+        """Serve the web interface"""
+        try:
+            with open('web_interface.html', 'r', encoding='utf-8') as f:
+                return f.read()
+        except FileNotFoundError:
+            # Fallback to API documentation if HTML file not found
+            return jsonify({
+                'name': 'Sentiment Analysis Chatbot API',
+                'version': '1.0',
+                'endpoints': {
+                    'POST /chat': 'Send a message and get response with sentiment',
+                    'GET /analysis': 'Get full conversation analysis',
+                    'POST /reset': 'Reset conversation history',
+                    'GET /health': 'Health check'
+                },
+                'example_request': {
+                    'url': '/chat',
+                    'method': 'POST',
+                    'body': {'message': 'Your service is amazing!'}
+                }
+            })
     
     
     @app.route('/health')

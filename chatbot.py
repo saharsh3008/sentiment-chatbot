@@ -4,10 +4,20 @@ A production-ready chatbot with advanced sentiment analysis capabilities
 """
 
 import re
+import os
 from datetime import datetime
 from typing import Dict, List, Tuple
 from dataclasses import dataclass, field
 import json
+
+# Check for OpenAI availability
+try:
+    import openai
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    print("OpenAI library not installed. Install with: pip install openai")
+    print("AI responses will use intelligent fallback mode.")
 
 
 @dataclass
@@ -125,8 +135,8 @@ class SentimentAnalyzer:
 
 
 class ResponseGenerator:
-    """Generate contextual chatbot responses based on sentiment"""
-    
+    """Generate contextual chatbot responses based on sentiment with optional AI enhancement"""
+
     def __init__(self):
         self.responses = {
             'Positive': [
@@ -151,12 +161,69 @@ class ResponseGenerator:
                 "I'm listening. How can I support you today?"
             ]
         }
-    
-    def generate(self, user_message: str, sentiment: str) -> str:
-        """Generate appropriate response based on sentiment"""
-        import random
-        responses = self.responses.get(sentiment, self.responses['Neutral'])
-        return random.choice(responses)
+
+        # AI enhancement setup
+        self.use_ai = OPENAI_AVAILABLE and os.getenv('OPENAI_API_KEY')
+        if self.use_ai:
+            openai.api_key = os.getenv('OPENAI_API_KEY')
+            print("🤖 AI responses enabled! Using OpenAI for more natural conversations.")
+        else:
+            print("💬 Using intelligent fallback responses. Set OPENAI_API_KEY for AI-enhanced responses.")
+
+    def generate(self, user_message: str, sentiment: str, sentiment_data: Dict = None) -> str:
+        """Generate appropriate response based on sentiment, with optional AI enhancement"""
+        if self.use_ai and sentiment_data:
+            return self._generate_ai_response(user_message, sentiment, sentiment_data)
+        else:
+            # Fallback to intelligent sentiment-based responses
+            import random
+            responses = self.responses.get(sentiment, self.responses['Neutral'])
+            return random.choice(responses)
+
+    def _generate_ai_response(self, user_message: str, sentiment: str, sentiment_data: Dict) -> str:
+        """Generate AI-powered response using OpenAI"""
+        try:
+            # Create context-aware prompt
+            sentiment_context = f"""
+            User sentiment: {sentiment}
+            Sentiment score: {sentiment_data['score']:.3f}
+            Confidence: {sentiment_data['confidence']:.1f}%
+            Positive words: {sentiment_data['positive_count']}
+            Negative words: {sentiment_data['negative_count']}
+            """
+
+            prompt = f"""
+            You are a helpful, empathetic chatbot with sentiment analysis capabilities.
+            The user just said: "{user_message}"
+
+            {sentiment_context}
+
+            Respond naturally and helpfully. Keep responses conversational and engaging.
+            If the user is expressing negative sentiment, show empathy and offer assistance.
+            If positive, acknowledge their feedback and continue the conversation.
+            If neutral, keep the dialogue flowing naturally.
+
+            Keep your response under 100 words and be friendly.
+            """
+
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a helpful chatbot with sentiment awareness."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=150,
+                temperature=0.7
+            )
+
+            return response.choices[0].message.content.strip()
+
+        except Exception as e:
+            print(f"AI response failed: {e}. Using fallback response.")
+            # Fallback to sentiment-based responses
+            import random
+            responses = self.responses.get(sentiment, self.responses['Neutral'])
+            return random.choice(responses)
 
 
 class ConversationAnalyzer:
@@ -241,16 +308,24 @@ class SentimentChatbot:
     def process_message(self, user_input: str) -> Tuple[str, SentimentResult]:
         """
         Process user message and generate response with sentiment analysis
-        
+
         Args:
             user_input: User's message
-            
+
         Returns:
             Tuple of (bot_response, sentiment_result)
         """
         # Analyze sentiment
         sentiment_result = self.sentiment_analyzer.analyze(user_input)
-        
+
+        # Prepare sentiment data for AI response
+        sentiment_data = {
+            'score': sentiment_result.score,
+            'confidence': sentiment_result.confidence,
+            'positive_count': sentiment_result.positive_count,
+            'negative_count': sentiment_result.negative_count
+        }
+
         # Store user message
         user_message = Message(
             role='user',
@@ -259,10 +334,10 @@ class SentimentChatbot:
             sentiment_data=sentiment_result
         )
         self.messages.append(user_message)
-        
-        # Generate bot response
-        bot_response = self.response_generator.generate(user_input, sentiment_result.sentiment)
-        
+
+        # Generate bot response (now with AI enhancement)
+        bot_response = self.response_generator.generate(user_input, sentiment_result.sentiment, sentiment_data)
+
         # Store bot message
         bot_message = Message(
             role='bot',
@@ -270,7 +345,7 @@ class SentimentChatbot:
             timestamp=datetime.now().strftime('%H:%M:%S')
         )
         self.messages.append(bot_message)
-        
+
         return bot_response, sentiment_result
     
     def get_conversation_analysis(self) -> Dict:

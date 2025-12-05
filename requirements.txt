@@ -1,5 +1,5 @@
 # Sentiment Analysis Chatbot - Requirements
-# 
+#
 # This project uses only Python standard library
 # No external dependencies required!
 #
@@ -14,3 +14,5 @@
 # API Requirements (Optional - for REST API feature)
 flask==3.0.0
 flask-cors==4.0.0
+# AI Enhancement (Optional - for conversational AI responses)
+openai>=1.0.0

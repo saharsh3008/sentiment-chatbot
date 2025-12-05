@@ -51,6 +51,35 @@ python chatbot.py
 
 That's it! No pip installs needed.
 
+### 🤖 AI Enhancement (Optional)
+
+For more natural, conversational responses:
+
+1. **Install OpenAI library**
+```bash
+pip install openai>=1.0.0
+```
+
+2. **Get OpenAI API Key**
+   - Sign up at [OpenAI Platform](https://platform.openai.com/)
+   - Create an API key in your dashboard
+
+3. **Set Environment Variable**
+```bash
+# Windows
+set OPENAI_API_KEY=your_api_key_here
+
+# Linux/Mac
+export OPENAI_API_KEY=your_api_key_here
+```
+
+4. **Run with AI responses**
+```bash
+python chatbot.py
+```
+
+**Note:** Without the API key, the chatbot uses intelligent fallback responses.
+
 ## 📖 How to Use
 
 ### Interactive Mode

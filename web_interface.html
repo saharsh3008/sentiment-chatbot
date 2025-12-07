@@ -47,16 +47,75 @@
                     'happy', 'pleased', 'satisfied', 'perfect', 'awesome', 'brilliant', 'better',
                     'best', 'outstanding', 'superb', 'delighted', 'impressed', 'thank', 'thanks',
                     'appreciate', 'helpful', 'nice', 'glad', 'enjoy', 'enjoyed', 'beautiful',
-                    'terrific', 'splendid', 'fabulous', 'remarkable', 'exceptional', 'positive'
+                    'terrific', 'splendid', 'fabulous', 'remarkable', 'exceptional', 'positive',
+                    'joyful', 'joy', 'smiling', 'smile', 'laughing', 'laugh', 'cheerful', 'cheer',
+                    'excited', 'exciting', 'thrilled', 'thrilling', 'ecstatic', 'blissful', 'bliss',
+                    'content', 'contented', 'pleasure', 'pleasant', 'fun', 'funny', 'hilarious',
+                    'amusing', 'entertaining', 'relaxed', 'relaxing', 'peaceful', 'calm', 'serene',
+                    'tranquil', 'comfortable', 'cozy', 'warm', 'loving', 'affectionate', 'caring',
+                    'kind', 'generous', 'grateful', 'gratitude', 'blessed', 'fortunate', 'lucky',
+                    'proud', 'accomplished', 'achieved', 'successful', 'victorious', 'triumphant',
+                    'confident', 'optimistic', 'hopeful', 'encouraging', 'inspiring', 'motivated',
+                    'enthusiastic', 'passionate', 'vibrant', 'energetic', 'lively', 'vital',
+                    'radiant', 'glowing', 'sparkling', 'shining', 'brilliant', 'magnificent',
+                    'spectacular', 'marvelous', 'super', 'incredible', 'unbelievable', 'phenomenal'
                 ];
                 
                 const negativeWords = [
-                    'bad', 'terrible', 'awful', 'horrible', 'disappointing', 'disappoints',
-                    'disappointed', 'poor', 'worst', 'hate', 'angry', 'upset', 'frustrated',
-                    'frustrating', 'annoyed', 'annoying', 'useless', 'pathetic', 'disgusting',
-                    'unacceptable', 'failed', 'failure', 'broken', 'issue', 'problem', 'slow',
-                    'difficult', 'confusing', 'complaint', 'unhappy', 'sad', 'dislike', 'worse',
-                    'never', 'rubbish', 'garbage', 'stupid', 'ridiculous', 'waste', 'negative'
+                    // Strong negative words
+                    'kill', 'murder', 'death', 'die', 'dead', 'hate', 'hated', 'hating',
+                    'destroy', 'destruction', 'ruin', 'ruined', 'damn', 'damned', 'hell',
+                    'suck', 'sucks', 'sucked', 'fuck', 'fucking', 'shit', 'shitty',
+                    'asshole', 'bastard', 'bitch', 'crap', 'craps', 'bullshit',
+
+                    // Emotional negative words
+                    'angry', 'rage', 'furious', 'enraged', 'infuriated', 'outraged',
+                    'frustrated', 'frustrating', 'annoyed', 'annoying', 'irritated',
+                    'irritating', 'upset', 'disturbed', 'distressed', 'worried',
+                    'anxious', 'nervous', 'scared', 'afraid', 'terrified', 'frightened',
+                    'horrified', 'shocked', 'disgusted', 'repulsed', 'revolted',
+
+                    // Quality negative words
+                    'bad', 'terrible', 'awful', 'horrible', 'atrocious', 'abominable',
+                    'dreadful', 'vile', 'wretched', 'miserable', 'pathetic', 'pitiful',
+                    'lousy', 'crappy', 'shoddy', 'inferior', 'substandard', 'defective',
+                    'broken', 'damaged', 'ruined', 'spoiled', 'rotten', 'stale',
+
+                    // Experience negative words
+                    'disappointing', 'disappointed', 'disappointment', 'letdown',
+                    'failed', 'failure', 'failing', 'unsuccessful', 'useless',
+                    'worthless', 'pointless', 'meaningless', 'stupid', 'dumb',
+                    'idiotic', 'ridiculous', 'absurd', 'nonsense', 'crazy',
+
+                    // Problem negative words
+                    'problem', 'problems', 'issue', 'issues', 'trouble', 'troubles',
+                    'difficulty', 'difficulties', 'complication', 'complications',
+                    'obstacle', 'obstacles', 'barrier', 'barriers', 'hurdle', 'hurdles',
+                    'setback', 'setbacks', 'drawback', 'drawbacks', 'disadvantage',
+
+                    // Complaint words
+                    'complaint', 'complaints', 'unhappy', 'dissatisfied', 'unsatisfied',
+                    'displeased', 'discontent', 'discontented', 'grievance', 'grievances',
+                    'beef', 'gripe', 'griping', 'whining', 'complaining',
+
+                    // Mild negative words
+                    'poor', 'worst', 'worse', 'sad', 'sorrow', 'sorrowful', 'grief',
+                    'grieving', 'mourn', 'mourning', 'depressed', 'depressing', 'gloomy',
+                    'dreary', 'dismal', 'bleak', 'dark', 'negative', 'pessimistic',
+
+                    // Additional negative words
+                    'never', 'no', 'none', 'nothing', 'nobody', 'nowhere', 'rejected',
+                    'rejection', 'denied', 'denial', 'refused', 'refusal', 'banned',
+                    'ban', 'forbidden', 'prohibited', 'illegal', 'unlawful', 'wrong',
+                    'mistake', 'error', 'fault', 'blame', 'guilt', 'guilty', 'ashamed',
+                    'embarrassed', 'humiliated', 'insulted', 'offended', 'hurt',
+                    'pain', 'painful', 'suffering', 'suffer', 'agony', 'torment',
+                    'torture', 'cruel', 'cruelty', 'brutal', 'brutality', 'violent',
+                    'violence', 'abuse', 'abused', 'victim', 'victimized', 'oppressed',
+                    'oppression', 'injustice', 'unfair', 'unfairness', 'corrupt',
+                    'corruption', 'scam', 'scammed', 'fraud', 'fraudulent', 'deceit',
+                    'deceitful', 'lie', 'lied', 'lying', 'false', 'falsely', 'fake',
+                    'phony', 'counterfeit', 'bogus', 'spurious'
                 ];
 
                 const intensifiers = ['very', 'extremely', 'really', 'absolutely', 'totally', 'completely'];
@@ -98,12 +157,29 @@
                 const totalWords = positiveCount + negativeCount;
                 const normalizedScore = totalWords > 0 ? score / totalWords : 0;
 
+                // Adjust thresholds based on word counts for better accuracy
+                let positiveThreshold = 0.2;
+                let negativeThreshold = -0.2;
+
+                // If we have strong negative words, be more sensitive
+                const strongNegativeWords = ['kill', 'murder', 'death', 'hate', 'fuck', 'shit', 'damn', 'hell'];
+                const hasStrongNegative = words.some(word => strongNegativeWords.includes(word.replace(/[^\w\s]|_/g, "")));
+
+                if (hasStrongNegative) {
+                    negativeThreshold = -0.1; // More sensitive to strong negative words
+                }
+
+                // If message is short and contains negative words, classify as negative
+                if (words.length <= 3 && negativeCount > 0 && positiveCount === 0) {
+                    negativeThreshold = 0; // Even single negative words in short messages should be negative
+                }
+
                 let sentiment, confidence, emoji;
-                if (normalizedScore > 0.3) {
+                if (normalizedScore > positiveThreshold) {
                     sentiment = 'Positive';
                     confidence = Math.min(95, 60 + normalizedScore * 50);
                     emoji = '😊';
-                } else if (normalizedScore < -0.3) {
+                } else if (normalizedScore < negativeThreshold) {
                     sentiment = 'Negative';
                     confidence = Math.min(95, 60 + Math.abs(normalizedScore) * 50);
                     emoji = '😔';
@@ -123,27 +199,52 @@
                 };
             };
 
-            const generateResponse = (userMessage, sentiment) => {
-                const responses = {
-                    Positive: [
-                        "I'm glad to hear that! How else can I assist you today?",
-                        "That's wonderful! Is there anything else you'd like to discuss?",
-                        "Great to hear positive feedback! What else can I help with?",
-                    ],
-                    Negative: [
-                        "I'm sorry to hear that. Let me help address your concerns.",
-                        "I understand your frustration. How can I make this better for you?",
-                        "Your feedback is important. Let me see how I can help resolve this.",
-                    ],
-                    Neutral: [
-                        "I understand. How can I assist you further?",
-                        "Thank you for sharing. What else would you like to know?",
-                        "I'm here to help. What would you like to discuss?",
-                    ]
-                };
+            const generateResponse = async (userMessage, sentiment) => {
+                try {
+                    const response = await fetch('http://localhost:5000/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message: userMessage })
+                    });
 
-                const sentimentResponses = responses[sentiment] || responses.Neutral;
-                return sentimentResponses[Math.floor(Math.random() * sentimentResponses.length)];
+                    if (!response.ok) {
+                        throw new Error('API request failed');
+                    }
+
+                    const data = await response.json();
+                    return {
+                        response: data.bot_response,
+                        sentiment: data.sentiment
+                    };
+                } catch (error) {
+                    console.error('API call failed:', error);
+                    // Fallback to local responses if API is unavailable
+                    const responses = {
+                        Positive: [
+                            "I'm glad to hear that! How else can I assist you today?",
+                            "That's wonderful! Is there anything else you'd like to discuss?",
+                            "Great to hear positive feedback! What else can I help with?",
+                        ],
+                        Negative: [
+                            "I'm sorry to hear that. Let me help address your concerns.",
+                            "I understand your frustration. How can I make this better for you?",
+                            "Your feedback is important. Let me see how I can help resolve this.",
+                        ],
+                        Neutral: [
+                            "I understand. How can I assist you further?",
+                            "Thank you for sharing. What else would you like to know?",
+                            "I'm here to help. What would you like to discuss?",
+                        ]
+                    };
+
+                    const sentimentResponses = responses[sentiment] || responses.Neutral;
+                    return {
+                        response: sentimentResponses[Math.floor(Math.random() * sentimentResponses.length)],
+                        sentiment: sentiment
+                    };
+                }
             };
 
             const calculateOverallSentiment = () => {
@@ -216,9 +317,10 @@
                     timestamp: new Date().toLocaleTimeString()
                 };
 
-                const botResponse = generateResponse(userMessage, sentimentData.sentiment);
+                try {
+                    const result = await generateResponse(userMessage, sentimentData.sentiment);
+                    const botResponse = result.response;
 
-                setTimeout(() => {
                     setMessages(prev => [
                         ...prev,
                         newUserMessage,
@@ -228,8 +330,28 @@
                             timestamp: new Date().toLocaleTimeString()
                         }
                     ]);
-                    setIsAnalyzing(false);
-                }, 500);
+                } catch (error) {
+                    console.error('Error getting response:', error);
+                    // Fallback response
+                    const fallbackResponses = {
+                        Positive: ["I'm glad to hear that! How else can I assist you today?"],
+                        Negative: ["I'm sorry to hear that. Let me help address your concerns."],
+                        Neutral: ["I understand. How can I assist you further?"]
+                    };
+                    const fallbackResponse = fallbackResponses[sentimentData.sentiment] || fallbackResponses.Neutral;
+
+                    setMessages(prev => [
+                        ...prev,
+                        newUserMessage,
+                        {
+                            role: 'bot',
+                            content: fallbackResponse[0],
+                            timestamp: new Date().toLocaleTimeString()
+                        }
+                    ]);
+                }
+
+                setIsAnalyzing(false);
             };
 
             const handleKeyPress = (e) => {
@@ -255,7 +377,7 @@
             const analysis = calculateOverallSentiment();
 
             return (
-                <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+                <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 p-4">
                     <div className="max-w-6xl mx-auto">
                         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
                             {/* Header */}
@@ -276,9 +398,9 @@
 
                             <div className="grid md:grid-cols-3 gap-0">
                                 {/* Chat Area */}
-                                <div className="md:col-span-2 flex flex-col h-[600px]">
+                                <div className="md:col-span-2 flex flex-col">
                                     {/* Messages */}
-                                    <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
+                                    <div className="flex-1 p-6 space-y-4 bg-gray-50">
                                         {messages.length === 0 && (
                                             <div className="text-center text-gray-500 mt-20">
                                                 <div className="text-6xl mb-4">📊</div>
@@ -348,7 +470,7 @@
                                 </div>
 
                                 {/* Analysis Panel */}
-                                <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 border-l border-gray-200 overflow-y-auto h-[600px]">
+                                <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 border-l border-gray-200">
                                     <h2 className="text-xl font-bold text-gray-800 mb-4">📊 Live Analysis</h2>
 
                                     {analysis ? (
@@ -418,26 +540,56 @@
                                             {/* Score History */}
                                             <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
                                                 <h3 className="text-sm font-semibold text-gray-600 mb-3">Score Timeline</h3>
-                                                <div className="flex items-end gap-1 h-20">
-                                                    {analysis.scoreHistory.map((score, idx) => {
-                                                        const height = Math.abs(score) * 100;
-                                                        const isPositive = score > 0;
+                                                <div className="flex items-end gap-1 h-40 bg-gray-50 rounded p-3 border overflow-x-auto">
+                                                    {analysis.scoreHistory.length > 0 ? analysis.scoreHistory.map((score, idx) => {
+                                                        // Enhanced scaling for better visibility: base 20% + score contribution * 60, minimum 30%
+                                                        const baseHeight = 20;
+                                                        const scoreHeight = Math.abs(score) * 60;
+                                                        const height = Math.max(baseHeight + scoreHeight, 30);
+
+                                                        // Clear color logic with distinct colors
+                                                        let barColor = 'bg-blue-500 hover:bg-blue-600'; // neutral default (blue)
+                                                        let sentimentLabel = 'Neutral';
+                                                        if (score > 0.15) {
+                                                            barColor = 'bg-green-500 hover:bg-green-600'; // positive
+                                                            sentimentLabel = 'Positive';
+                                                        } else if (score < -0.15) {
+                                                            barColor = 'bg-red-500 hover:bg-red-600'; // negative
+                                                            sentimentLabel = 'Negative';
+                                                        }
+
                                                         return (
                                                             <div
-                                                                key={idx}
-                                                                className="flex-1 flex flex-col justify-end"
-                                                                title={`Message ${idx + 1}: ${score.toFixed(2)}`}
+                                                                key={`score-${idx}-${score}-${Date.now()}`}
+                                                                className="flex-1 flex flex-col justify-end min-w-[30px] max-w-[45px]"
+                                                                title={`Message ${idx + 1}: ${score.toFixed(3)} (${sentimentLabel})`}
                                                             >
                                                                 <div
-                                                                    className={`w-full rounded-t ${
-                                                                        isPositive ? 'bg-green-400' : 'bg-red-400'
-                                                                    }`}
-                                                                    style={{ height: `${Math.max(height, 5)}%` }}
+                                                                    className={`w-full rounded-t transition-all duration-700 border-2 border-white shadow-md ${barColor} animate-pulse`}
+                                                                    style={{ height: `${height}%`, animationDuration: '0.5s' }}
                                                                 ></div>
+                                                                <div className="text-xs text-center mt-1 text-gray-600 font-mono">
+                                                                    {score.toFixed(1)}
+                                                                </div>
                                                             </div>
                                                         );
-                                                    })}
+                                                    }) : (
+                                                        <div className="w-full text-center text-gray-400 text-sm py-8">
+                                                            <div className="text-2xl mb-2">📈</div>
+                                                            Send messages to see sentiment timeline
+                                                        </div>
+                                                    )}
                                                 </div>
+                                                {analysis.scoreHistory.length > 0 && (
+                                                    <div className="mt-3 text-xs text-gray-500 text-center space-y-1">
+                                                        <div>💚 Positive • ❤️ Negative • 💙 Neutral • Hover bars for details</div>
+                                                        <div className="text-xs text-gray-400">
+                                                            Messages: {analysis.scoreHistory.length} |
+                                                            Range: {Math.min(...analysis.scoreHistory).toFixed(2)} to {Math.max(...analysis.scoreHistory).toFixed(2)} |
+                                                            Latest: {analysis.scoreHistory[analysis.scoreHistory.length - 1]?.toFixed(2)}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             {/* Stats */}
@@ -458,12 +610,7 @@
                             </div>
                         </div>
 
-                        {/* Footer Info */}
-                        <div className="mt-4 text-center text-sm text-gray-600">
-                            <p>✅ Tier 1: Full conversation sentiment analysis</p>
-                            <p>✅ Tier 2: Per-message sentiment + trend analysis</p>
-                            <p>🎯 Bonus: Real-time visualization, confidence scores, mood trends</p>
-                        </div>
+
                     </div>
                 </div>
             );

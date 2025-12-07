@@ -10,7 +10,25 @@ from typing import Dict, List, Tuple
 from dataclasses import dataclass, field
 import json
 
-# Check for OpenAI availability
+# Load environment variables
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    DOTENV_AVAILABLE = True
+except ImportError:
+    DOTENV_AVAILABLE = False
+    print("python-dotenv not installed. Install with: pip install python-dotenv")
+    print("Environment variables will be read from system environment.")
+
+# Check for AI availability
+try:
+    import google.generativeai as genai
+    GEMINI_AVAILABLE = True
+except ImportError:
+    GEMINI_AVAILABLE = False
+    print("Google Generative AI library not installed. Install with: pip install google-generativeai")
+    print("AI responses will use intelligent fallback mode.")
+
 try:
     import openai
     OPENAI_AVAILABLE = True
@@ -46,22 +64,80 @@ class SentimentAnalyzer:
     def __init__(self):
         # Expanded sentiment lexicons
         self.positive_words = {
-            'good', 'great', 'excellent', 'amazing', 'wonderful', 'fantastic', 
-            'love', 'happy', 'pleased', 'satisfied', 'perfect', 'awesome', 
+            'good', 'great', 'excellent', 'amazing', 'wonderful', 'fantastic',
+            'love', 'happy', 'pleased', 'satisfied', 'perfect', 'awesome',
             'brilliant', 'better', 'best', 'outstanding', 'superb', 'delighted',
             'impressed', 'thank', 'thanks', 'appreciate', 'helpful', 'nice',
             'glad', 'enjoy', 'enjoyed', 'beautiful', 'terrific', 'splendid',
-            'fabulous', 'remarkable', 'exceptional', 'positive', 'joy', 'success'
+            'fabulous', 'remarkable', 'exceptional', 'positive', 'joy', 'success',
+            'joyful', 'smiling', 'smile', 'laughing', 'laugh', 'cheerful', 'cheer',
+            'excited', 'exciting', 'thrilled', 'thrilling', 'ecstatic', 'blissful', 'bliss',
+            'content', 'contented', 'pleasure', 'pleasant', 'fun', 'funny', 'hilarious',
+            'amusing', 'entertaining', 'relaxed', 'relaxing', 'peaceful', 'calm', 'serene',
+            'tranquil', 'comfortable', 'cozy', 'warm', 'loving', 'affectionate', 'caring',
+            'kind', 'generous', 'grateful', 'gratitude', 'blessed', 'fortunate', 'lucky',
+            'proud', 'accomplished', 'achieved', 'successful', 'victorious', 'triumphant',
+            'confident', 'optimistic', 'hopeful', 'encouraging', 'inspiring', 'motivated',
+            'enthusiastic', 'passionate', 'vibrant', 'energetic', 'lively', 'vital',
+            'radiant', 'glowing', 'sparkling', 'shining', 'magnificent',
+            'spectacular', 'marvelous', 'super', 'incredible', 'unbelievable', 'phenomenal'
         }
         
         self.negative_words = {
-            'bad', 'terrible', 'awful', 'horrible', 'disappointing', 'disappoints',
-            'disappointed', 'poor', 'worst', 'hate', 'angry', 'upset', 'frustrated',
-            'frustrating', 'annoyed', 'annoying', 'useless', 'pathetic', 'disgusting',
-            'unacceptable', 'failed', 'failure', 'broken', 'issue', 'problem',
-            'slow', 'difficult', 'confusing', 'complaint', 'unhappy', 'sad',
-            'dislike', 'worse', 'never', 'rubbish', 'garbage', 'stupid',
-            'ridiculous', 'waste', 'negative', 'disaster', 'sorry', 'wrong'
+            # Strong negative words
+            'kill', 'murder', 'death', 'die', 'dead', 'hate', 'hated', 'hating',
+            'destroy', 'destruction', 'ruin', 'ruined', 'damn', 'damned', 'hell',
+            'suck', 'sucks', 'sucked', 'fuck', 'fucking', 'shit', 'shitty',
+            'asshole', 'bastard', 'bitch', 'crap', 'craps', 'bullshit',
+
+            # Emotional negative words
+            'angry', 'rage', 'furious', 'enraged', 'infuriated', 'outraged',
+            'frustrated', 'frustrating', 'annoyed', 'annoying', 'irritated',
+            'irritating', 'upset', 'disturbed', 'distressed', 'worried',
+            'anxious', 'nervous', 'scared', 'afraid', 'terrified', 'frightened',
+            'horrified', 'shocked', 'disgusted', 'repulsed', 'revolted',
+
+            # Quality negative words
+            'bad', 'terrible', 'awful', 'horrible', 'atrocious', 'abominable',
+            'dreadful', 'vile', 'wretched', 'miserable', 'pathetic', 'pitiful',
+            'lousy', 'crappy', 'shoddy', 'inferior', 'substandard', 'defective',
+            'broken', 'damaged', 'ruined', 'spoiled', 'rotten', 'stale',
+
+            # Experience negative words
+            'disappointing', 'disappointed', 'disappointment', 'letdown',
+            'failed', 'failure', 'failing', 'unsuccessful', 'useless',
+            'worthless', 'pointless', 'meaningless', 'stupid', 'dumb',
+            'idiotic', 'ridiculous', 'absurd', 'nonsense', 'crazy',
+
+            # Problem negative words
+            'problem', 'problems', 'issue', 'issues', 'trouble', 'troubles',
+            'difficulty', 'difficulties', 'complication', 'complications',
+            'obstacle', 'obstacles', 'barrier', 'barriers', 'hurdle', 'hurdles',
+            'setback', 'setbacks', 'drawback', 'drawbacks', 'disadvantage',
+
+            # Complaint words
+            'complaint', 'complaints', 'unhappy', 'dissatisfied', 'unsatisfied',
+            'displeased', 'discontent', 'discontented', 'grievance', 'grievances',
+            'beef', 'gripe', 'griping', 'whining', 'complaining',
+
+            # Mild negative words
+            'poor', 'worst', 'worse', 'sad', 'sorrow', 'sorrowful', 'grief',
+            'grieving', 'mourn', 'mourning', 'depressed', 'depressing', 'gloomy',
+            'dreary', 'dismal', 'bleak', 'dark', 'negative', 'pessimistic',
+
+            # Additional negative words
+            'never', 'no', 'none', 'nothing', 'nobody', 'nowhere', 'rejected',
+            'rejection', 'denied', 'denial', 'refused', 'refusal', 'banned',
+            'ban', 'forbidden', 'prohibited', 'illegal', 'unlawful', 'wrong',
+            'mistake', 'error', 'fault', 'blame', 'guilt', 'guilty', 'ashamed',
+            'embarrassed', 'humiliated', 'insulted', 'offended', 'hurt',
+            'pain', 'painful', 'suffering', 'suffer', 'agony', 'torment',
+            'torture', 'cruel', 'cruelty', 'brutal', 'brutality', 'violent',
+            'violence', 'abuse', 'abused', 'victim', 'victimized', 'oppressed',
+            'oppression', 'injustice', 'unfair', 'unfairness', 'corrupt',
+            'corruption', 'scam', 'scammed', 'fraud', 'fraudulent', 'deceit',
+            'deceitful', 'lie', 'lied', 'lying', 'false', 'falsely', 'fake',
+            'phony', 'counterfeit', 'bogus', 'spurious'
         }
         
         self.intensifiers = {'very', 'extremely', 'really', 'absolutely', 'totally', 'completely'}
@@ -109,13 +185,41 @@ class SentimentAnalyzer:
         # Normalize score
         total_words = positive_count + negative_count
         normalized_score = score / total_words if total_words > 0 else 0
-        
+
+        # Adjust thresholds based on word counts for better accuracy
+        positive_threshold = 0.2
+        negative_threshold = -0.2
+
+        # If we have strong negative words, be more sensitive
+        strong_negative_words = {'kill', 'murder', 'death', 'hate', 'fuck', 'shit', 'damn', 'hell'}
+        has_strong_negative = any(word in strong_negative_words for word in words)
+
+        if has_strong_negative:
+            negative_threshold = -0.1  # More sensitive to strong negative words
+
+        # If message is short and contains negative words, classify as negative
+        if len(words) <= 3 and negative_count > 0 and positive_count == 0:
+            negative_threshold = 0  # Even single negative words in short messages should be negative
+
+        # If message is short and contains positive words, classify as positive
+        if len(words) <= 3 and positive_count > 0 and negative_count == 0:
+            positive_threshold = 0  # Even single positive words in short messages should be positive
+
+        # If we have strong positive words, be more sensitive
+        strong_positive_words = {'amazing', 'wonderful', 'fantastic', 'excellent', 'perfect', 'awesome',
+                                'love', 'joyful', 'smiling', 'laughing', 'thrilled', 'ecstatic',
+                                'blissful', 'spectacular', 'phenomenal', 'incredible'}
+        has_strong_positive = any(word in strong_positive_words for word in words)
+
+        if has_strong_positive:
+            positive_threshold = 0.1  # More sensitive to strong positive words
+
         # Determine sentiment with confidence
-        if normalized_score > 0.3:
+        if normalized_score > positive_threshold:
             sentiment = 'Positive'
             confidence = min(95, 60 + normalized_score * 50)
             emoji = '😊'
-        elif normalized_score < -0.3:
+        elif normalized_score < negative_threshold:
             sentiment = 'Negative'
             confidence = min(95, 60 + abs(normalized_score) * 50)
             emoji = '😔'
@@ -162,27 +266,40 @@ class ResponseGenerator:
             ]
         }
 
-        # AI enhancement setup
-        self.use_ai = OPENAI_AVAILABLE and os.getenv('OPENAI_API_KEY')
-        if self.use_ai:
-            openai.api_key = os.getenv('OPENAI_API_KEY')
-            print("🤖 AI responses enabled! Using OpenAI for more natural conversations.")
-        else:
-            print("💬 Using intelligent fallback responses. Set OPENAI_API_KEY for AI-enhanced responses.")
+        # AI enhancement setup - Gemini only
+        self.use_gemini = GEMINI_AVAILABLE and os.getenv('GEMINI_API_KEY')
 
-    def generate(self, user_message: str, sentiment: str, sentiment_data: Dict = None) -> str:
+        if self.use_gemini:
+            genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+            # Use the latest stable model
+            self.model = genai.GenerativeModel('models/gemini-flash-latest')
+            print("🤖 AI responses enabled! Using Google Gemini Flash Latest for more natural conversations.")
+        else:
+            print("💬 Using intelligent fallback responses. Set GEMINI_API_KEY for AI-enhanced responses.")
+
+    def generate(self, user_message: str, sentiment: str, sentiment_data: Dict = None, conversation_history: List = None) -> str:
         """Generate appropriate response based on sentiment, with optional AI enhancement"""
-        if self.use_ai and sentiment_data:
-            return self._generate_ai_response(user_message, sentiment, sentiment_data)
+        if (self.use_gemini or self.use_openai) and sentiment_data:
+            return self._generate_ai_response(user_message, sentiment, sentiment_data, conversation_history)
         else:
             # Fallback to intelligent sentiment-based responses
             import random
             responses = self.responses.get(sentiment, self.responses['Neutral'])
             return random.choice(responses)
 
-    def _generate_ai_response(self, user_message: str, sentiment: str, sentiment_data: Dict) -> str:
-        """Generate AI-powered response using OpenAI"""
+    def _generate_ai_response(self, user_message: str, sentiment: str, sentiment_data: Dict, conversation_history: List = None) -> str:
+        """Generate AI-powered response using Gemini or OpenAI with conversation history"""
         try:
+            # Prepare conversation history (last 5 messages for context)
+            history_context = ""
+            if conversation_history:
+                recent_messages = [msg for msg in conversation_history[-10:] if msg.role in ['user', 'bot']]  # Last 10 messages, but only user/bot
+                if len(recent_messages) > 1:  # Need at least 2 messages for context
+                    history_context = "\nRecent conversation:\n"
+                    for msg in recent_messages[-6:]:  # Last 6 messages (3 exchanges)
+                        role = "User" if msg.role == 'user' else "Assistant"
+                        history_context += f"{role}: {msg.content}\n"
+
             # Create context-aware prompt
             sentiment_context = f"""
             User sentiment: {sentiment}
@@ -197,8 +314,10 @@ class ResponseGenerator:
             The user just said: "{user_message}"
 
             {sentiment_context}
+            {history_context}
 
             Respond naturally and helpfully. Keep responses conversational and engaging.
+            Build on the conversation history if provided - reference previous topics or maintain context.
             If the user is expressing negative sentiment, show empathy and offer assistance.
             If positive, acknowledge their feedback and continue the conversation.
             If neutral, keep the dialogue flowing naturally.
@@ -206,17 +325,22 @@ class ResponseGenerator:
             Keep your response under 100 words and be friendly.
             """
 
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are a helpful chatbot with sentiment awareness."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=150,
-                temperature=0.7
-            )
-
-            return response.choices[0].message.content.strip()
+            if self.use_gemini:
+                # Use Google Gemini
+                response = self.model.generate_content(prompt)
+                return response.text.strip()
+            elif self.use_openai:
+                # Use OpenAI as fallback
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful chatbot with sentiment awareness."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    max_tokens=150,
+                    temperature=0.7
+                )
+                return response.choices[0].message.content.strip()
 
         except Exception as e:
             print(f"AI response failed: {e}. Using fallback response.")
@@ -336,7 +460,7 @@ class SentimentChatbot:
         self.messages.append(user_message)
 
         # Generate bot response (now with AI enhancement)
-        bot_response = self.response_generator.generate(user_input, sentiment_result.sentiment, sentiment_data)
+        bot_response = self.response_generator.generate(user_input, sentiment_result.sentiment, sentiment_data, self.messages)
 
         # Store bot message
         bot_message = Message(

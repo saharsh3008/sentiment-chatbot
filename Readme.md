@@ -6,6 +6,8 @@
 
 A production-ready chatbot with advanced sentiment analysis capabilities. Features real-time emotion detection, conversation trend analysis, and comprehensive sentiment reporting.
 
+Deployment - 'https://sentiment-chatbot-8qfo.onrender.com'
+
 ## ✨ Features
 
 ### ✅ Tier 1 - Mandatory (Implemented)
